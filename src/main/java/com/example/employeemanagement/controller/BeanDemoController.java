@@ -22,6 +22,6 @@ public class BeanDemoController {
         return Map.of(
                 "code", utilityService.generateEmployeeCode(),
                 "name", utilityService.normalizeEmployeeName(
-                        "  nGUYỄN   vĂN a "));
+                        "  nGUYỄN   vĂN an "));
     }
 }
