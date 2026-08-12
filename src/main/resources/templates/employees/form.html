@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <title>Thêm nhân viên</title>
+    <link rel="stylesheet"
+          th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="container narrow">
+
+    <header class="page-header">
+        <div>
+            <h1>Thêm nhân viên</h1>
+            <p>Nhập thông tin nhân viên mới.</p>
+        </div>
+
+        <a class="button secondary"
+           th:href="@{/employees/list}">
+            Quay lại
+        </a>
+    </header>
+
+    <section class="panel">
+        <form method="post"
+              th:action="@{/employees/add}"
+              th:object="${employeeForm}">
+
+            <div class="field">
+                <label for="name">
+                    Họ tên
+                </label>
+
+                <input id="name"
+                       type="text"
+                       maxlength="150"
+                       required
+                       th:field="*{name}">
+
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('name')}"
+                   th:errors="*{name}">
+                    Name error
+                </p>
+            </div>
+
+            <div class="field">
+                <label for="email">
+                    Email
+                </label>
+
+                <input id="email"
+                       type="email"
+                       maxlength="255"
+                       required
+                       th:field="*{email}">
+
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('email')}"
+                   th:errors="*{email}">
+                    Email error
+                </p>
+            </div>
+
+            <div class="field">
+                <label for="departmentId">
+                    Phòng ban
+                </label>
+
+                <select id="departmentId"
+                        required
+                        th:field="*{departmentId}">
+
+                    <option value="">
+                        -- Chọn phòng ban --
+                    </option>
+
+                    <option
+                            th:each="department : ${departments}"
+                            th:value="${department.id}"
+                            th:text="${department.name}">
+                    </option>
+                </select>
+
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('departmentId')}"
+                   th:errors="*{departmentId}">
+                    Department error
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <button class="button"
+                        type="submit">
+                    Lưu nhân viên
+                </button>
+
+                <a class="button secondary"
+                   th:href="@{/employees/list}">
+                    Hủy
+                </a>
+            </div>
+        </form>
+    </section>
+
+</main>
+</body>
+</html>

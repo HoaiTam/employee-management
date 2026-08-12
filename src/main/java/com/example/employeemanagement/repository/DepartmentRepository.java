@@ -1,5 +1,6 @@
 package com.example.employeemanagement.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.example.employeemanagement.model.Department;
@@ -9,4 +10,6 @@ public interface DepartmentRepository
         extends JpaRepository<Department, Long> {
 
     Optional<Department> findByNameIgnoreCase(String name);
+
+    List<Department> findAllByOrderByNameAsc();
 }

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <title>Danh sách nhân viên</title>
+    <link rel="stylesheet"
+          th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="container">
+
+    <header class="page-header">
+        <div>
+            <h1>Danh sách nhân viên</h1>
+            <p>Quản lý và tìm kiếm nhân viên trong hệ thống.</p>
+        </div>
+
+        <a class="button"
+           th:href="@{/employees/add}">
+            Thêm nhân viên
+        </a>
+    </header>
+
+    <div class="alert success"
+         th:if="${successMessage}"
+         th:text="${successMessage}">
+    </div>
+
+    <section class="panel">
+        <h2>Tìm kiếm</h2>
+
+        <form class="filter-form"
+              method="get"
+              th:action="@{/employees/list}">
+
+            <div class="field">
+                <label for="searchName">
+                    Tên nhân viên
+                </label>
+
+                <input id="searchName"
+                       type="search"
+                       name="name"
+                       placeholder="Nhập tên..."
+                       th:value="${searchName}">
+            </div>
+
+            <div class="field">
+                <label for="departmentId">
+                    Phòng ban
+                </label>
+
+                <select id="departmentId"
+                        name="departmentId">
+
+                    <option value="">
+                        Tất cả phòng ban
+                    </option>
+
+                    <option
+                            th:each="department : ${departments}"
+                            th:value="${department.id}"
+                            th:text="${department.name}"
+                            th:selected="${department.id == selectedDepartmentId}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button class="button"
+                        type="submit">
+                    Tìm kiếm
+                </button>
+
+                <a class="button secondary"
+                   th:href="@{/employees/list}">
+                    Xóa bộ lọc
+                </a>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Phòng ban</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="employee : ${employees}">
+                    <td th:text="${employee.code}">
+                        EMP-0001
+                    </td>
+
+                    <td th:text="${employee.name}">
+                        Nguyễn Văn An
+                    </td>
+
+                    <td th:text="${employee.email}">
+                        an@example.com
+                    </td>
+
+                    <td th:text="${employee.department.name}">
+                        Engineering
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(employees)}">
+                    <td colspan="4"
+                        class="empty-state">
+                        Không tìm thấy nhân viên phù hợp.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

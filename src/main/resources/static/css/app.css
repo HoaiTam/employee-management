@@ -1,0 +1,148 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: #1f2937;
+    background: #f3f4f6;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: min(1100px, calc(100% - 32px));
+    margin: 40px auto;
+}
+
+.container.narrow {
+    max-width: 720px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.page-header h1,
+.panel h2 {
+    margin-top: 0;
+}
+
+.page-header p {
+    margin-bottom: 0;
+    color: #6b7280;
+}
+
+.panel {
+    margin-bottom: 24px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.filter-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 16px;
+    align-items: end;
+}
+
+.field {
+    margin-bottom: 18px;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.field input,
+.field select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font: inherit;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 16px;
+    border: 1px solid #2563eb;
+    border-radius: 6px;
+    color: #ffffff;
+    background: #2563eb;
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button.secondary {
+    color: #374151;
+    border-color: #d1d5db;
+    background: #ffffff;
+}
+
+.filter-actions,
+.form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+th {
+    background: #f9fafb;
+}
+
+.field-error {
+    margin: 6px 0 0;
+    color: #dc2626;
+}
+
+.alert {
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    border-radius: 6px;
+}
+
+.alert.success {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.empty-state {
+    padding: 32px;
+    color: #6b7280;
+    text-align: center;
+}
+
+@media (max-width: 760px) {
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .filter-form {
+        grid-template-columns: 1fr;
+    }
+}
