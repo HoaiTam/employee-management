@@ -1,58 +1,141 @@
 package com.example.employeemanagement.service;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import com.example.employeemanagement.dto.CreateEmployeeRequest;
+import com.example.employeemanagement.dto.DepartmentResponse;
+import com.example.employeemanagement.dto.EmployeeResponse;
+import com.example.employeemanagement.dto.UpdateEmployeeRequest;
+import com.example.employeemanagement.model.Department;
 import com.example.employeemanagement.model.Employee;
-import com.example.employeemanagement.repository.EmployeeInMemoryRepository;
+import com.example.employeemanagement.repository.DepartmentRepository;
+import com.example.employeemanagement.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class EmployeeService {
 
-    private final EmployeeInMemoryRepository repository;
+    private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
     private final UtilityService utilityService;
 
     public EmployeeService(
-            EmployeeInMemoryRepository repository,
+            EmployeeRepository employeeRepository,
+            DepartmentRepository departmentRepository,
             UtilityService utilityService) {
-        this.repository = repository;
+        this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
         this.utilityService = utilityService;
     }
 
-    public List<Employee> findAll(String name) {
-        List<Employee> employees = repository.findAll();
+    public List<EmployeeResponse> findAll(
+            String name,
+            Long departmentId) {
 
-        if (name == null || name.isBlank()) {
-            return employees;
+        String keyword =
+                name == null ? "" : name.trim();
+
+        List<Employee> employees;
+
+        if (!keyword.isBlank() && departmentId != null) {
+            employees = employeeRepository
+                    .findByNameContainingIgnoreCaseAndDepartment_IdOrderByIdAsc(
+                            keyword,
+                            departmentId);
+        } else if (!keyword.isBlank()) {
+            employees = employeeRepository
+                    .findByNameContainingIgnoreCaseOrderByIdAsc(
+                            keyword);
+        } else if (departmentId != null) {
+            employees = employeeRepository
+                    .findByDepartment_IdOrderByIdAsc(
+                            departmentId);
+        } else {
+            employees = employeeRepository
+                    .findAllByOrderByIdAsc();
         }
 
-        String keyword = name.trim()
-                .toLowerCase(Locale.ROOT);
-
         return employees.stream()
-                .filter(employee ->
-                        employee.name()
-                                .toLowerCase(Locale.ROOT)
-                                .contains(keyword))
+                .map(this::toResponse)
                 .toList();
     }
 
-    public Optional<Employee> findById(long id) {
-        return repository.findById(id);
+    public Optional<EmployeeResponse> findById(long id) {
+        return employeeRepository.findById(id)
+                .map(this::toResponse);
     }
 
-    public Employee create(CreateEmployeeRequest request) {
-        Employee employee = new Employee(
-                null,
-                utilityService.generateEmployeeCode(),
+    @Transactional
+    public Optional<EmployeeResponse> create(
+            CreateEmployeeRequest request) {
+
+        return departmentRepository
+                .findById(request.departmentId())
+                .map(department -> new Employee(
+                        utilityService.normalizeEmployeeName(
+                                request.name()),
+                        request.email(),
+                        department))
+                .map(employeeRepository::save)
+                .map(this::toResponse);
+    }
+
+    @Transactional
+    public Optional<EmployeeResponse> update(
+            long id,
+            UpdateEmployeeRequest request) {
+
+        Optional<Employee> employeeResult =
+                employeeRepository.findById(id);
+
+        Optional<Department> departmentResult =
+                departmentRepository.findById(
+                        request.departmentId());
+
+        if (employeeResult.isEmpty()
+                || departmentResult.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Employee employee = employeeResult.get();
+
+        employee.updateDetails(
                 utilityService.normalizeEmployeeName(
                         request.name()),
                 request.email(),
-                request.department());
+                departmentResult.get());
 
-        return repository.save(employee);
+        return Optional.of(toResponse(employee));
+    }
+
+    @Transactional
+    public boolean delete(long id) {
+        return employeeRepository.findById(id)
+                .map(employee -> {
+                    employeeRepository.delete(employee);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    private EmployeeResponse toResponse(Employee employee) {
+        Department department =
+                employee.getDepartment();
+
+        DepartmentResponse departmentResponse =
+                new DepartmentResponse(
+                        department.getId(),
+                        department.getName());
+
+        return new EmployeeResponse(
+                employee.getId(),
+                utilityService.formatEmployeeCode(
+                        employee.getId()),
+                employee.getName(),
+                employee.getEmail(),
+                departmentResponse);
     }
 }

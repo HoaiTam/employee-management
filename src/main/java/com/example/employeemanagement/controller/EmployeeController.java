@@ -1,19 +1,23 @@
 package com.example.employeemanagement.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import com.example.employeemanagement.dto.CreateEmployeeRequest;
-import com.example.employeemanagement.model.Employee;
+import com.example.employeemanagement.dto.EmployeeResponse;
+import com.example.employeemanagement.dto.UpdateEmployeeRequest;
 import com.example.employeemanagement.service.EmployeeService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -27,18 +31,24 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> findAll(
+    public ResponseEntity<List<EmployeeResponse>> findAll(
             @RequestParam(
                     name = "name",
                     required = false)
-            String name) {
+            String name,
+            @RequestParam(
+                    name = "departmentId",
+                    required = false)
+            Long departmentId) {
 
         return ResponseEntity.ok(
-                employeeService.findAll(name));
+                employeeService.findAll(
+                        name,
+                        departmentId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> findById(
+    public ResponseEntity<EmployeeResponse> findById(
             @PathVariable("id") long id) {
 
         return employeeService.findById(id)
@@ -48,14 +58,46 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> create(
+    public ResponseEntity<EmployeeResponse> create(
             @RequestBody CreateEmployeeRequest request) {
 
-        Employee createdEmployee =
-                employeeService.create(request);
+        return employeeService.create(request)
+                .map(createdEmployee -> {
+                    URI location =
+                            ServletUriComponentsBuilder
+                                    .fromCurrentRequest()
+                                    .path("/{id}")
+                                    .buildAndExpand(
+                                            createdEmployee.id())
+                                    .toUri();
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdEmployee);
+                    return ResponseEntity
+                            .created(location)
+                            .body(createdEmployee);
+                })
+                .orElseGet(() ->
+                        ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeResponse> update(
+            @PathVariable("id") long id,
+            @RequestBody UpdateEmployeeRequest request) {
+
+        return employeeService.update(id, request)
+                .map(ResponseEntity::ok)
+                .orElseGet(() ->
+                        ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable("id") long id) {
+
+        if (!employeeService.delete(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }

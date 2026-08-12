@@ -1,6 +1,6 @@
 package com.example.employeemanagement.dto;
 
-public record CreateEmployeeRequest(
+public record UpdateEmployeeRequest(
         String name,
         String email,
         Long departmentId) {

@@ -30,4 +30,8 @@ public class UtilityService {
                         .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
                         .collect(Collectors.joining(" "));
     }
+
+    public String formatEmployeeCode(long id) {
+        return "EMP-%04d".formatted(id);
+    }
 }
