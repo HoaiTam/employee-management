@@ -20,4 +20,10 @@ public interface EmployeeRepository
     findByNameContainingIgnoreCaseAndDepartment_IdOrderByIdAsc(
             String name,
             Long departmentId);
+
+    boolean existsByEmailIgnoreCase(String email);
+
+    boolean existsByEmailIgnoreCaseAndIdNot(
+            String email,
+            Long id);
 }

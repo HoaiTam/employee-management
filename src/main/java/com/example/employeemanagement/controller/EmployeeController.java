@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -51,52 +52,50 @@ public class EmployeeController {
     public ResponseEntity<EmployeeResponse> findById(
             @PathVariable("id") long id) {
 
-        return employeeService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() ->
-                        ResponseEntity.notFound().build());
+        return ResponseEntity.ok(
+                employeeService.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<EmployeeResponse> create(
-            @RequestBody CreateEmployeeRequest request) {
+            @Valid
+            @RequestBody
+            CreateEmployeeRequest request) {
 
-        return employeeService.create(request)
-                .map(createdEmployee -> {
-                    URI location =
-                            ServletUriComponentsBuilder
-                                    .fromCurrentRequest()
-                                    .path("/{id}")
-                                    .buildAndExpand(
-                                            createdEmployee.id())
-                                    .toUri();
+        EmployeeResponse createdEmployee =
+                employeeService.create(request);
 
-                    return ResponseEntity
-                            .created(location)
-                            .body(createdEmployee);
-                })
-                .orElseGet(() ->
-                        ResponseEntity.notFound().build());
+        URI location =
+                ServletUriComponentsBuilder
+                        .fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(
+                                createdEmployee.id())
+                        .toUri();
+
+        return ResponseEntity
+                .created(location)
+                .body(createdEmployee);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeResponse> update(
             @PathVariable("id") long id,
-            @RequestBody UpdateEmployeeRequest request) {
+            @Valid
+            @RequestBody
+            UpdateEmployeeRequest request) {
 
-        return employeeService.update(id, request)
-                .map(ResponseEntity::ok)
-                .orElseGet(() ->
-                        ResponseEntity.notFound().build());
+        return ResponseEntity.ok(
+                employeeService.update(
+                        id,
+                        request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable("id") long id) {
 
-        if (!employeeService.delete(id)) {
-            return ResponseEntity.notFound().build();
-        }
+        employeeService.delete(id);
 
         return ResponseEntity.noContent().build();
     }

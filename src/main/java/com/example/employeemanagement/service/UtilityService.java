@@ -34,4 +34,14 @@ public class UtilityService {
     public String formatEmployeeCode(long id) {
         return "EMP-%04d".formatted(id);
     }
+
+    public String normalizeEmail(String rawEmail) {
+        if (rawEmail == null) {
+            return "";
+        }
+
+        return rawEmail
+                .trim()
+                .toLowerCase(Locale.ROOT);
+    }
 }

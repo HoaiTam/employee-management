@@ -1,12 +1,13 @@
 package com.example.employeemanagement.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.example.employeemanagement.dto.CreateEmployeeRequest;
 import com.example.employeemanagement.dto.DepartmentResponse;
 import com.example.employeemanagement.dto.EmployeeResponse;
 import com.example.employeemanagement.dto.UpdateEmployeeRequest;
+import com.example.employeemanagement.exception.DuplicateResourceException;
+import com.example.employeemanagement.exception.ResourceNotFoundException;
 import com.example.employeemanagement.model.Department;
 import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.repository.DepartmentRepository;
@@ -63,62 +64,89 @@ public class EmployeeService {
                 .toList();
     }
 
-    public Optional<EmployeeResponse> findById(long id) {
-        return employeeRepository.findById(id)
-                .map(this::toResponse);
+    public EmployeeResponse findById(long id) {
+        return toResponse(findEmployee(id));
     }
 
     @Transactional
-    public Optional<EmployeeResponse> create(
+    public EmployeeResponse create(
             CreateEmployeeRequest request) {
 
-        return departmentRepository
-                .findById(request.departmentId())
-                .map(department -> new Employee(
-                        utilityService.normalizeEmployeeName(
-                                request.name()),
-                        request.email(),
-                        department))
-                .map(employeeRepository::save)
-                .map(this::toResponse);
+        Department department =
+                findDepartment(request.departmentId());
+
+        String normalizedEmail =
+                utilityService.normalizeEmail(
+                        request.email());
+
+        if (employeeRepository
+                .existsByEmailIgnoreCase(
+                        normalizedEmail)) {
+            throw new DuplicateResourceException(
+                    "Employee email already exists");
+        }
+
+        Employee employee = new Employee(
+                utilityService.normalizeEmployeeName(
+                        request.name()),
+                normalizedEmail,
+                department);
+
+        return toResponse(
+                employeeRepository.save(employee));
     }
 
     @Transactional
-    public Optional<EmployeeResponse> update(
+    public EmployeeResponse update(
             long id,
             UpdateEmployeeRequest request) {
 
-        Optional<Employee> employeeResult =
-                employeeRepository.findById(id);
+        Employee employee = findEmployee(id);
 
-        Optional<Department> departmentResult =
-                departmentRepository.findById(
-                        request.departmentId());
+        Department department =
+                findDepartment(request.departmentId());
 
-        if (employeeResult.isEmpty()
-                || departmentResult.isEmpty()) {
-            return Optional.empty();
+        String normalizedEmail =
+                utilityService.normalizeEmail(
+                        request.email());
+
+        if (employeeRepository
+                .existsByEmailIgnoreCaseAndIdNot(
+                        normalizedEmail,
+                        id)) {
+            throw new DuplicateResourceException(
+                    "Employee email already exists");
         }
-
-        Employee employee = employeeResult.get();
 
         employee.updateDetails(
                 utilityService.normalizeEmployeeName(
                         request.name()),
-                request.email(),
-                departmentResult.get());
+                normalizedEmail,
+                department);
 
-        return Optional.of(toResponse(employee));
+        return toResponse(employee);
     }
 
     @Transactional
-    public boolean delete(long id) {
+    public void delete(long id) {
+        Employee employee = findEmployee(id);
+        employeeRepository.delete(employee);
+    }
+
+    private Employee findEmployee(long id) {
         return employeeRepository.findById(id)
-                .map(employee -> {
-                    employeeRepository.delete(employee);
-                    return true;
-                })
-                .orElse(false);
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Employee",
+                                id));
+    }
+
+    private Department findDepartment(Long id) {
+        return departmentRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Department",
+                                id));
     }
 
     private EmployeeResponse toResponse(Employee employee) {
