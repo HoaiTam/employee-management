@@ -14,10 +14,16 @@ import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Transactional(readOnly = true)
 public class EmployeeService {
+
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(
+                    EmployeeService.class);
 
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
@@ -39,6 +45,11 @@ public class EmployeeService {
         String keyword =
                 name == null ? "" : name.trim();
 
+        LOGGER.debug(
+                "Searching employees: nameFilterPresent={}, departmentId={}",
+                !keyword.isBlank(),
+                departmentId);
+
         List<Employee> employees;
 
         if (!keyword.isBlank() && departmentId != null) {
@@ -58,6 +69,10 @@ public class EmployeeService {
             employees = employeeRepository
                     .findAllByOrderByIdAsc();
         }
+
+        LOGGER.debug(
+                "Employee search completed: resultCount={}",
+                employees.size());
 
         return employees.stream()
                 .map(this::toResponse)
@@ -92,8 +107,15 @@ public class EmployeeService {
                 normalizedEmail,
                 department);
 
-        return toResponse(
-                employeeRepository.save(employee));
+        Employee savedEmployee =
+                employeeRepository.save(employee);
+
+        LOGGER.info(
+                "Employee created: employeeId={}, departmentId={}",
+                savedEmployee.getId(),
+                department.getId());
+
+        return toResponse(savedEmployee);
     }
 
     @Transactional
@@ -124,13 +146,23 @@ public class EmployeeService {
                 normalizedEmail,
                 department);
 
+        LOGGER.info(
+                "Employee updated: employeeId={}, departmentId={}",
+                employee.getId(),
+                department.getId());
+
         return toResponse(employee);
     }
 
     @Transactional
     public void delete(long id) {
         Employee employee = findEmployee(id);
+
         employeeRepository.delete(employee);
+
+        LOGGER.info(
+                "Employee deleted: employeeId={}",
+                employee.getId());
     }
 
     private Employee findEmployee(long id) {
