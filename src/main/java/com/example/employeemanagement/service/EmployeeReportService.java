@@ -1,6 +1,10 @@
 package com.example.employeemanagement.service;
 
+import java.util.List;
+
+import com.example.employeemanagement.dto.DepartmentEmployeeCountResponse;
 import com.example.employeemanagement.dto.EmployeeCountResponse;
+import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +20,13 @@ public class EmployeeReportService {
             LoggerFactory.getLogger(EmployeeReportService.class);
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
 
     public EmployeeReportService(
-            EmployeeRepository employeeRepository) {
+            EmployeeRepository employeeRepository,
+            DepartmentRepository departmentRepository) {
         this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @Cacheable(
@@ -34,5 +41,15 @@ public class EmployeeReportService {
                 employeeRepository.count();
 
         return new EmployeeCountResponse(totalEmployees);
+    }
+
+    public List<DepartmentEmployeeCountResponse>
+    getEmployeesByDepartment() {
+
+        LOGGER.debug(
+                "Calculating employee count by department");
+
+        return departmentRepository
+                .countEmployeesByDepartment();
     }
 }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <title>Thống kê nhân viên</title>
+    <link rel="stylesheet"
+          th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="container">
+
+    <header class="page-header">
+        <div>
+            <h1>Thống kê nhân viên</h1>
+            <p>Tổng quan số lượng nhân viên trong hệ thống.</p>
+        </div>
+
+        <a class="button secondary"
+           th:href="@{/employees/list}">
+            Quay lại danh sách
+        </a>
+    </header>
+
+    <section class="statistics-grid">
+        <article class="statistic-card">
+            <span class="statistic-label">
+                Tổng số nhân viên
+            </span>
+
+            <strong class="statistic-value"
+                    th:text="${totalEmployees}">
+                0
+            </strong>
+        </article>
+    </section>
+
+    <section class="panel">
+        <h2>Số lượng theo phòng ban</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Phòng ban</th>
+                    <th>Số nhân viên</th>
+                    <th>Tỷ lệ</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="statistic : ${departmentStatistics}">
+                    <td th:text="${statistic.departmentName}">
+                        Engineering
+                    </td>
+
+                    <td th:text="${statistic.employeeCount}">
+                        0
+                    </td>
+
+                    <td th:text="${totalEmployees == 0
+                            ? '0.0%'
+                            : #numbers.formatDecimal(
+                                    statistic.employeeCount * 100.0
+                                            / totalEmployees,
+                                    1,
+                                    1) + '%'}">
+                        0.0%
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(departmentStatistics)}">
+                    <td colspan="3"
+                        class="empty-state">
+                        Chưa có dữ liệu phòng ban.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

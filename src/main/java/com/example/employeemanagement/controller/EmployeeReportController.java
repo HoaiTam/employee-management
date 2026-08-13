@@ -1,5 +1,8 @@
 package com.example.employeemanagement.controller;
 
+import java.util.List;
+
+import com.example.employeemanagement.dto.DepartmentEmployeeCountResponse;
 import com.example.employeemanagement.dto.EmployeeCountResponse;
 import com.example.employeemanagement.service.EmployeeReportService;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +27,15 @@ public class EmployeeReportController {
 
         return ResponseEntity.ok(
                 employeeReportService.getTotalEmployees());
+    }
+
+    @GetMapping("/by-department")
+    public ResponseEntity<
+            List<DepartmentEmployeeCountResponse>>
+    getEmployeesByDepartment() {
+
+        return ResponseEntity.ok(
+                employeeReportService
+                        .getEmployeesByDepartment());
     }
 }

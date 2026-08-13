@@ -118,7 +118,8 @@ public class SecurityConfiguration {
 
                                 .requestMatchers(
                                         "/employees",
-                                        "/employees/list")
+                                        "/employees/list",
+                                        "/employees/statistics")
                                 .hasAnyRole(
                                         "USER",
                                         "ADMIN")
