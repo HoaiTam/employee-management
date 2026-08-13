@@ -30,6 +30,16 @@ class ProfileConfigurationTest {
                 base.getProperty(
                         "spring.jpa.open-in-view"))
                 .isEqualTo(false);
+
+        assertThat(
+                base.getProperty("spring.cache.type"))
+                .isEqualTo("caffeine");
+
+        assertThat(
+                base.getProperty(
+                        "spring.cache.caffeine.spec"))
+                .isEqualTo(
+                        "maximumSize=100,expireAfterWrite=1m,recordStats");
     }
 
     @Test
@@ -93,4 +103,6 @@ class ProfileConfigurationTest {
                         new ClassPathResource(fileName))
                 .get(0);
     }
+
+
 }

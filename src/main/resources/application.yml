@@ -8,6 +8,12 @@ spring:
   jpa:
     open-in-view: false
 
+  cache:
+    type: caffeine
+    cache-names: employeeCount
+    caffeine:
+      spec: "maximumSize=100,expireAfterWrite=1m,recordStats"
+
 server:
   port: ${SERVER_PORT:8080}
 
@@ -17,8 +23,18 @@ management:
       exposure:
         include: health,info
 
+  info:
+    env:
+      enabled: true
+
 info:
   app:
     name: ${spring.application.name}
     description: Employee Management System learning project
     java-version: ${java.version}
+
+app:
+  scheduling:
+    system-status:
+      fixed-rate-ms: 30000
+      initial-delay-ms: 30000

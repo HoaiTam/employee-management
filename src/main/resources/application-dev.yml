@@ -28,3 +28,13 @@ logging:
     root: INFO
     com.example.employeemanagement: DEBUG
     org.hibernate.SQL: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,caches,scheduledtasks
+
+  endpoint:
+    health:
+      show-details: always

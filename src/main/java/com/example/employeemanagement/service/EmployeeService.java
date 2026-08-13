@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 
 @Service
 @Transactional(readOnly = true)
@@ -83,6 +84,9 @@ public class EmployeeService {
         return toResponse(findEmployee(id));
     }
 
+    @CacheEvict(
+            cacheNames = "employeeCount",
+            key = "'total'")
     @Transactional
     public EmployeeResponse create(
             CreateEmployeeRequest request) {
@@ -154,6 +158,9 @@ public class EmployeeService {
         return toResponse(employee);
     }
 
+    @CacheEvict(
+            cacheNames = "employeeCount",
+            key = "'total'")
     @Transactional
     public void delete(long id) {
         Employee employee = findEmployee(id);
