@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi"
-      xmlns:th="https://www.thymeleaf.org">
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -18,10 +19,28 @@
             <p>Quản lý và tìm kiếm nhân viên trong hệ thống.</p>
         </div>
 
-        <a class="button"
-           th:href="@{/employees/add}">
-            Thêm nhân viên
-        </a>
+        <div class="header-actions">
+    <span>
+        Xin chào,
+        <strong sec:authentication="name">
+            username
+        </strong>
+    </span>
+
+            <a class="button"
+               sec:authorize="hasRole('ADMIN')"
+               th:href="@{/employees/add}">
+                Thêm nhân viên
+            </a>
+
+            <form method="post"
+                  th:action="@{/logout}">
+                <button class="button secondary"
+                        type="submit">
+                    Đăng xuất
+                </button>
+            </form>
+        </div>
     </header>
 
     <div class="alert success"

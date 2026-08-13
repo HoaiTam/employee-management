@@ -38,3 +38,12 @@ management:
   endpoint:
     health:
       show-details: always
+
+app:
+  security:
+    jwt:
+      secret: "${JWT_SECRET:development-only-secret-key-change-me-123456}"
+
+    dev-users:
+      admin-password: "${DEV_ADMIN_PASSWORD:Admin123!}"
+      user-password: "${DEV_USER_PASSWORD:User123!}"

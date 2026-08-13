@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import java.util.UUID;
 
@@ -18,10 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser(roles = "ADMIN")
 class EmployeePageControllerTest {
 
     private final MockMvc mockMvc;
@@ -74,6 +77,7 @@ class EmployeePageControllerTest {
 
         mockMvc.perform(
                         post("/employees/add")
+                                .with(csrf())
                                 .contentType(
                                         MediaType.APPLICATION_FORM_URLENCODED)
                                 .param("name", " ")
@@ -106,6 +110,7 @@ class EmployeePageControllerTest {
 
         mockMvc.perform(
                         post("/employees/add")
+                                .with(csrf())
                                 .contentType(
                                         MediaType.APPLICATION_FORM_URLENCODED)
                                 .param(
@@ -150,6 +155,7 @@ class EmployeePageControllerTest {
 
         mockMvc.perform(
                         post("/employees/add")
+                                .with(csrf())
                                 .contentType(
                                         MediaType.APPLICATION_FORM_URLENCODED)
                                 .param(
@@ -179,6 +185,7 @@ class EmployeePageControllerTest {
 
         mockMvc.perform(
                         post("/employees/add")
+                                .with(csrf())
                                 .contentType(
                                         MediaType.APPLICATION_FORM_URLENCODED)
                                 .param("name", name)

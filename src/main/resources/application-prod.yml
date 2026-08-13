@@ -19,3 +19,8 @@ logging:
   level:
     root: INFO
     com.example.employeemanagement: INFO
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}

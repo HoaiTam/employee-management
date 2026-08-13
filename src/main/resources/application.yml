@@ -38,3 +38,8 @@ app:
     system-status:
       fixed-rate-ms: 30000
       initial-delay-ms: 30000
+
+  security:
+    jwt:
+      issuer: employee-management
+      access-token-ttl: 15m

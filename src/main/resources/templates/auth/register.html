@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <title>Đăng ký</title>
+    <link rel="stylesheet"
+          th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="container narrow">
+    <section class="panel">
+        <h1>Đăng ký</h1>
+
+        <form method="post"
+              th:action="@{/register}"
+              th:object="${registrationForm}">
+
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username"
+                       type="text"
+                       th:field="*{username}"
+                       required>
+
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('username')}"
+                   th:errors="*{username}">
+                </p>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input id="password"
+                       type="password"
+                       th:field="*{password}"
+                       required>
+
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('password')}"
+                   th:errors="*{password}">
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <button class="button"
+                        type="submit">
+                    Đăng ký
+                </button>
+
+                <a class="button secondary"
+                   th:href="@{/login}">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

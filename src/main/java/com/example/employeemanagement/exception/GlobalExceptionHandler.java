@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.AuthenticationException;
 
 @RestControllerAdvice(
         annotations = RestController.class)
@@ -113,5 +114,15 @@ public class GlobalExceptionHandler {
         problem.setTitle(title);
 
         return problem;
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthentication(
+            AuthenticationException exception) {
+
+        return createProblem(
+                HttpStatus.UNAUTHORIZED,
+                "Authentication failed",
+                "Username or password is invalid");
     }
 }

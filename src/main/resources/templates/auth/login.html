@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <title>Đăng nhập</title>
+    <link rel="stylesheet"
+          th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="container narrow">
+    <section class="panel">
+        <h1>Đăng nhập</h1>
+
+        <div class="alert"
+             th:if="${param.error}">
+            Username hoặc password không đúng.
+        </div>
+
+        <div class="alert success"
+             th:if="${param.logout}">
+            Bạn đã đăng xuất.
+        </div>
+
+        <div class="alert success"
+             th:if="${param.registered}">
+            Đăng ký thành công. Hãy đăng nhập.
+        </div>
+
+        <form method="post"
+              th:action="@{/login}">
+
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username"
+                       name="username"
+                       type="text"
+                       required>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input id="password"
+                       name="password"
+                       type="password"
+                       required>
+            </div>
+
+            <div class="form-actions">
+                <button class="button"
+                        type="submit">
+                    Đăng nhập
+                </button>
+
+                <a class="button secondary"
+                   th:href="@{/register}">
+                    Đăng ký
+                </a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
